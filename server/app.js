@@ -63,3 +63,27 @@ module.exports = function createApp(db) {
   app.delete('/proyectos/:id', route(async (req, res) => {
     changed(await query('DELETE FROM proyectos WHERE id=?', [getId(req.params.id)]), res, 'Proyecto eliminado.');
   }));
+
+  app.get('/asignaciones', route(async (req, res) => res.json(await query(`
+    SELECT ep.empleado_id, ep.proyecto_id, e.nombre, e.cargo, p.nombre_proyecto
+    FROM empleado_proyecto ep
+    INNER JOIN empleado e ON e.id=ep.empleado_id
+    INNER JOIN proyectos p ON p.id=ep.proyecto_id
+    ORDER BY p.nombre_proyecto, e.nombre`))));
+  app.post('/asignaciones', route(async (req, res) => {
+    const { empleado_id, proyecto_id } = req.body || {};
+    if (!idValido(empleado_id) || !idValido(proyecto_id)) return invalid(res, 'Selecciona un empleado y un proyecto.');
+    await query('INSERT INTO empleado_proyecto (empleado_id, proyecto_id) VALUES (?, ?)', [Number(empleado_id), Number(proyecto_id)]);
+    res.status(201).json({ mensaje: 'Empleado asignado al proyecto.' });
+  }));
+  app.put('/asignaciones/:empleadoId/:proyectoId', route(async (req, res) => {
+    const oldEmployee = getId(req.params.empleadoId), oldProject = getId(req.params.proyectoId);
+    const { empleado_id, proyecto_id } = req.body || {};
+    if (!idValido(empleado_id) || !idValido(proyecto_id)) return invalid(res, 'Selecciona un empleado y un proyecto.');
+    changed(await query('UPDATE empleado_proyecto SET empleado_id=?, proyecto_id=? WHERE empleado_id=? AND proyecto_id=?',
+      [Number(empleado_id), Number(proyecto_id), oldEmployee, oldProject]), res, 'Asignación actualizada.');
+  }));
+  app.delete('/asignaciones/:empleadoId/:proyectoId', route(async (req, res) => {
+    changed(await query('DELETE FROM empleado_proyecto WHERE empleado_id=? AND proyecto_id=?',
+      [getId(req.params.empleadoId), getId(req.params.proyectoId)]), res, 'Asignación retirada.');
+  }));

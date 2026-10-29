@@ -23,3 +23,10 @@ export default function Empleados({ data, mutate, askDelete, busy }) {
         <FormButtons editing={editing} busy={busy} onCancel={reset} createLabel="Registrar empleado"/>
       </fieldset></form><div className="form-note"><Icon name="info" size={17}/><span>Después del registro, podrás asignar proyectos y registrar su salario.</span></div>
     </section>
+
+    <section className="panel directory"><div className="panel-header"><div><h2>Directorio del equipo <span className="count">{data.empleados.length}</span></h2><p>Las personas que hacen posible cada proyecto.</p></div></div><div className="table-toolbar"><Search value={search} onChange={setSearch} placeholder="Buscar por nombre, cargo o correo…"/></div>
+      {filtered.length ? <div className="table-scroll"><table><thead><tr><th>Empleado</th><th>Cargo / país</th><th>Proyectos</th><th className="align-right">Acciones</th></tr></thead><tbody>{filtered.map(e => <tr key={e.id}><td><div className="person"><Avatar name={e.nombre}/><div><strong>{e.nombre}</strong><span>{e.correo}</span><small>#{e.id} · {e.edad} años</small></div></div></td><td><strong className="cell-title">{e.cargo}</strong><span className="cell-sub">{e.pais}</span></td><td><span className="pill">{data.asignaciones.filter(a => a.empleado_id === e.id).length} asignados</span></td><td><Actions label={e.nombre} onEdit={() => edit(e)} disabled={busy} onDelete={() => askDelete(`/empleados/${e.id}`, `Se eliminará a ${e.nombre}. Si tiene salarios o proyectos vinculados, deberás retirarlos primero.`)}/></td></tr>)}</tbody></table></div> : <Empty icon="empleados" title={search ? 'No encontramos coincidencias' : 'Tu equipo empieza aquí'}>{search ? 'Prueba con otro nombre, cargo o correo.' : 'Completa el formulario para registrar al primer empleado.'}</Empty>}
+      <div className="panel-footer">{filtered.length} de {data.empleados.length} empleados</div>
+    </section>
+  </div>;
+}

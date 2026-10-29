@@ -17,3 +17,14 @@ CREATE TABLE IF NOT EXISTS proyectos (
   descripcion TEXT NOT NULL,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS empleado_proyecto (
+  empleado_id INT NOT NULL,
+  proyecto_id INT NOT NULL,
+  PRIMARY KEY (empleado_id, proyecto_id),
+  KEY idx_ep_proyecto (proyecto_id),
+  CONSTRAINT fk_ep_empleado FOREIGN KEY (empleado_id) REFERENCES empleado(id)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_ep_proyecto FOREIGN KEY (proyecto_id) REFERENCES proyectos(id)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

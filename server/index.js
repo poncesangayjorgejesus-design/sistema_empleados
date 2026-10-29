@@ -1,83 +1,23 @@
-const express = require('express');
-const app = express();
 const mysql = require('mysql');
-const cors = require('cors');
+const createApp = require('./app');
 
-app.use(cors());
-app.use(express.json()); 
-
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: 'localhost',
   user: 'root', 
   password: '', 
-  database: 'empleados' 
+  database: 'empleados'
 });
-
-
-app.put('/update', (req, res) => {
-  const id = req.body.id;
-  const nombre = req.body.nombre;
-  const edad = req.body.edad;
-  const pais = req.body.pais;
-  const cargo = req.body.cargo;
-  const correo = req.body.correo;
-
-  db.query(
-    "UPDATE empleados SET nombre=?, edad=?, pais=?, cargo=?, correo=? WHERE id=?", 
-    [nombre, edad, pais, cargo, correo, id], 
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.send("Empleado actualizado exitosamente");
-      }
-    }
-  );
-});
-
-app.post('/create', (req, res) => {
-  const nombre = req.body.nombre;
-  const edad = req.body.edad;
-  const pais = req.body.pais;
-  const cargo = req.body.cargo;
-  const correo = req.body.correo;
-
-    db.query("INSERT INTO empleados (nombre, edad, pais, cargo, correo) VALUES (?,?,?,?,?)", [nombre, edad, pais, cargo, correo], 
-        (err, result) => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.send("Values Inserted");
-            }
-        }
-    );
-});
-
-
-
-app.delete('/delete/:id', (req, res) => {
-  const id = req.params.id;
-
-  db.query("DELETE FROM empleados WHERE id = ?", id, (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.send("Empleado eliminado");
-    }
+const app = createApp(db);
+const port = Number(process.env.PORT || 3001);
+const server = app.listen(port, () => {
+  console.log(`Servidor funcionando en http://localhost:${port}`);
+  db.query('SELECT 1', (error) => {
+    if (error) {
+      console.error('No se pudo conectar a MySQL:', error.code);
+      console.error('Inicia MySQL en XAMPP e importa base_de_datos.sql.');
+    } else console.log('Conectado a la base de datos de empleados.');
   });
 });
-
-app.get('/empleados', (req, res) => {
-    db.query("SELECT * FROM empleados", (err, result) => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.send(result);
-        }
-    });
-});
-
-
-app.listen(3001, () => {
-  console.log('Servidor corriendo en el puerto 3001');
-});
+function stop() { server.close(() => db.end(() => process.exit(0))); }
+process.on('SIGINT', stop);
+process.on('SIGTERM', stop);

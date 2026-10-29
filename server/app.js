@@ -47,3 +47,19 @@ module.exports = function createApp(db) {
   app.delete('/empleados/:id', route(async (req, res) => {
     changed(await query('DELETE FROM empleado WHERE id=?', [getId(req.params.id)]), res, 'Empleado eliminado.');
   }));
+
+  app.get('/proyectos', route(async (req, res) => res.json(await query('SELECT * FROM proyectos ORDER BY id DESC'))));
+  app.post('/proyectos', route(async (req, res) => {
+    const data = proyectoValido(req.body);
+    if (!data) return invalid(res, 'Ingresa un nombre (máximo 100 caracteres) y una descripción (máximo 5000).');
+    const result = await query('INSERT INTO proyectos (nombre_proyecto, descripcion) VALUES (?, ?)', data);
+    res.status(201).json({ mensaje: 'Proyecto creado.', id: result.insertId });
+  }));
+  app.put('/proyectos/:id', route(async (req, res) => {
+    const id = getId(req.params.id), data = proyectoValido(req.body);
+    if (!data) return invalid(res, 'Revisa el nombre y la descripción del proyecto.');
+    changed(await query('UPDATE proyectos SET nombre_proyecto=?, descripcion=? WHERE id=?', [...data, id]), res, 'Proyecto actualizado.');
+  }));
+  app.delete('/proyectos/:id', route(async (req, res) => {
+    changed(await query('DELETE FROM proyectos WHERE id=?', [getId(req.params.id)]), res, 'Proyecto eliminado.');
+  }));

@@ -109,3 +109,17 @@ module.exports = function createApp(db) {
   app.delete('/salarios/:id', route(async (req, res) => {
     changed(await query('DELETE FROM salario WHERE id=?', [getId(req.params.id)]), res, 'Registro de salario eliminado.');
   }));
+
+  app.use((req, res) => res.status(404).json({ mensaje: 'Ruta no encontrada.' }));
+  app.use((error, req, res, next) => {
+    if (error.type === 'entity.parse.failed') return invalid(res, 'El cuerpo JSON no es válido.');
+    if (error.type === 'entity.too.large') return res.status(413).json({ mensaje: 'La solicitud es demasiado grande.' });
+    if (error.status === 400) return invalid(res, error.message);
+    if (error.code === 'ER_DUP_ENTRY') return res.status(409).json({ mensaje: 'Ya existe esta asignación o un salario para ese empleado en la misma fecha.' });
+    if (error.code === 'ER_ROW_IS_REFERENCED_2') return res.status(409).json({ mensaje: 'Este registro tiene asignaciones o salarios vinculados. Retíralos primero si deseas eliminarlo.' });
+    if (error.code === 'ER_NO_REFERENCED_ROW_2') return res.status(409).json({ mensaje: 'El empleado o proyecto seleccionado ya no existe. Actualiza la lista.' });
+    console.error('Error de base de datos:', error.code || error.message);
+    res.status(503).json({ mensaje: 'No se pudo acceder a la base de datos. Inicia MySQL en XAMPP e importa base_de_datos.sql.' });
+  });
+  return app;
+};

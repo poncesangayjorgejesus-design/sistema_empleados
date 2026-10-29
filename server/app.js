@@ -29,3 +29,21 @@ module.exports = function createApp(db) {
     await query('SELECT 1 FROM salario LIMIT 1');
     res.json({ estado: 'ok' });
   }));
+
+  app.get('/empleados', route(async (req, res) => res.json(await query('SELECT * FROM empleado ORDER BY id DESC'))));
+  const createEmployee = route(async (req, res) => {
+    const data = empleadoValido(req.body);
+    if (!data) return invalid(res, 'Revisa nombre, edad (1 a 120), país, cargo y correo.');
+    const result = await query('INSERT INTO empleado (nombre, edad, pais, cargo, correo) VALUES (?, ?, ?, ?, ?)', data);
+    res.status(201).json({ mensaje: 'Empleado registrado correctamente.', id: result.insertId });
+  });
+  app.post('/create', createEmployee);
+  app.post('/empleados', createEmployee);
+  app.put('/empleados/:id', route(async (req, res) => {
+    const id = getId(req.params.id), data = empleadoValido(req.body);
+    if (!data) return invalid(res, 'Revisa nombre, edad (1 a 120), país, cargo y correo.');
+    changed(await query('UPDATE empleado SET nombre=?, edad=?, pais=?, cargo=?, correo=? WHERE id=?', [...data, id]), res, 'Empleado actualizado.');
+  }));
+  app.delete('/empleados/:id', route(async (req, res) => {
+    changed(await query('DELETE FROM empleado WHERE id=?', [getId(req.params.id)]), res, 'Empleado eliminado.');
+  }));

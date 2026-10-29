@@ -28,3 +28,14 @@ CREATE TABLE IF NOT EXISTS empleado_proyecto (
   CONSTRAINT fk_ep_proyecto FOREIGN KEY (proyecto_id) REFERENCES proyectos(id)
     ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS salario (
+  id INT NOT NULL AUTO_INCREMENT,
+  empleado_id INT NOT NULL,
+  monto DECIMAL(10,2) NOT NULL,
+  fecha_actualizacion DATE NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_salario_empleado_fecha (empleado_id, fecha_actualizacion),
+  CONSTRAINT fk_salario_empleado FOREIGN KEY (empleado_id) REFERENCES empleado(id)
+    ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -87,3 +87,25 @@ module.exports = function createApp(db) {
     changed(await query('DELETE FROM empleado_proyecto WHERE empleado_id=? AND proyecto_id=?',
       [getId(req.params.empleadoId), getId(req.params.proyectoId)]), res, 'Asignación retirada.');
   }));
+
+   app.get('/salarios', route(async (req, res) => res.json(await query(`
+    SELECT s.*, e.nombre, e.cargo,
+      NOT EXISTS (SELECT 1 FROM salario nuevo WHERE nuevo.empleado_id=s.empleado_id
+        AND (nuevo.fecha_actualizacion>s.fecha_actualizacion
+          OR (nuevo.fecha_actualizacion=s.fecha_actualizacion AND nuevo.id>s.id))) AS es_actual
+    FROM salario s INNER JOIN empleado e ON e.id=s.empleado_id
+    ORDER BY s.fecha_actualizacion DESC, s.id DESC`))));
+  app.post('/salarios', route(async (req, res) => {
+    const data = salarioValido(req.body);
+    if (!data) return invalid(res, 'Selecciona un empleado, un monto entre 0 y 99 999 999.99 (máximo 2 decimales) y una fecha válida.');
+    const result = await query('INSERT INTO salario (empleado_id, monto, fecha_actualizacion) VALUES (?, ?, ?)', data);
+    res.status(201).json({ mensaje: 'Salario registrado.', id: result.insertId });
+  }));
+  app.put('/salarios/:id', route(async (req, res) => {
+    const id = getId(req.params.id), data = salarioValido(req.body);
+    if (!data) return invalid(res, 'Revisa el empleado, el monto y la fecha del salario.');
+    changed(await query('UPDATE salario SET empleado_id=?, monto=?, fecha_actualizacion=? WHERE id=?', [...data, id]), res, 'Salario actualizado.');
+  }));
+  app.delete('/salarios/:id', route(async (req, res) => {
+    changed(await query('DELETE FROM salario WHERE id=?', [getId(req.params.id)]), res, 'Registro de salario eliminado.');
+  }));

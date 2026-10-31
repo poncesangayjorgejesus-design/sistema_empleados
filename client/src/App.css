@@ -1407,3 +1407,88 @@ th:last-child,td:last-child{
 .salary-ledger th{
   background:#f7fbf8
 }
+
+.notice{
+  display:flex;
+  gap:11px;
+  align-items:center;
+  padding:13px 17px;
+  border-radius:9px;
+  font-size:12px;
+  line-height:1.65;
+  margin-bottom:20px;
+  border:1px solid
+}
+.notice>span{
+  flex:1
+}
+.notice.success{
+  background:#eef9f3;
+  border-color:#d8eee1;
+  color:#357d59
+}
+.notice.error{
+  background:#fff3f2;
+  border-color:#f3dcd9;
+  color:#ad5550
+}
+.notice.warning{
+  background:#fff8e9;
+  border-color:#f1e4c6;
+  color:#9b793c
+}
+.notice .text-button{
+  color:inherit
+}
+.initial-state{
+  padding:65px 30px;
+  text-align:center
+}
+.initial-state h2{
+  font-size:22px;
+  margin:22px 0 12px
+}
+.initial-state p{
+  font-size:13px;
+  color:var(--muted);
+  max-width:500px;
+  margin:0 auto 23px
+}
+.confirm-dialog{
+  width:430px;
+  max-width:calc(100vw - 30px);
+  border:1px solid #e9edf4;
+  border-radius:17px;
+  padding:30px;
+  box-shadow:0 20px 80px #17223940;
+  color:#293951
+}
+.confirm-dialog::backdrop{
+  background:#15223e70;
+  backdrop-filter:blur(3px)
+}
+.dialog-icon{
+  background:#fff0ef;
+  color:#c75c55;
+  display:inline-grid;
+  place-items:center;
+  width:48px;
+  height:48px;
+  border-radius:13px;
+  margin-bottom:20px
+}
+.confirm-dialog h2{
+  font-size:22px;
+  margin-bottom:13px
+}
+.confirm-dialog p{
+  font-size:13px;
+  color:#8b96a9;
+  line-height:1.8
+}
+.dialog-actions{
+  display:flex;
+  gap:10px;
+  justify-content:flex-end;
+  margin-top:25px
+}

@@ -1,29 +1,78 @@
-.App {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+:root{
+  font-family:Inter,"Segoe UI",Arial,sans-serif;
+  color:#25304a;
+  background:#f5f7fb;
+  font-synthesis:none;
+  --accent:#315be8;
+  --soft:#edf2ff;
+  --ink:#173995;
+  --line:#e7ebf2;
+  --muted:#778299
 }
 
-.datos {
-  display: flex;
-  flex-direction: column ;
-  justify-content: center;
-  width: 100%;
-  align-items: center;
+*{
+  box-sizing:border-box
+}
+body{
+  margin:0
+}
+button,input,select,textarea{
+  font:inherit
+}
+button{
+  cursor:pointer
+}
+button:disabled{
+  cursor:not-allowed;
+  opacity:.55
+}
+button,a,input,select,textarea{
+   -webkit-tap-highlight-color:transparent
+}
+button:focus-visible,a:focus-visible{
+  outline:3px solid #7d9cff;
+  outline-offset:4px
+}
+button{
+  transition:background .16s,color .16s,transform .16s,box-shadow .16s
+}
+h1,h2,h3,p{
+  margin-top:0
+}
+h1,h2,h3{
+  color:#1b2843
+}
+p{
+  line-height:1.6
+}
+svg{
+  flex-shrink:0
+}
+input,select,textarea{
+  min-width:0
+}
+strong,td,h3{
+  overflow-wrap:anywhere
 }
 
-.datos input {
-  width: 300px;
-  height: 25px ;
-  font-size: 20px;
-  padding-left: 10px;
-  border-radius: 5px;
-  margin: 5px;
+.theme-empleados{
+  --accent:#315be8;
+  --soft:#edf2ff;
+  --ink:#173995
 }
-
-.datos button {
-  width: 320px;
-  height: 50px ;
-  margin-top: 5px;
+.theme-proyectos{
+  --accent:#7952cc;
+  --soft:#f2edfc;
+  --ink:#59369c
+}
+.theme-asignaciones{
+  --accent:#b77519;
+  --soft:#fff5e3;
+  --ink:#87510d
+}
+.theme-salarios{
+  --accent:#19856d;
+  --soft:#e7f5ef;
+  --ink:#10604f
 }
 

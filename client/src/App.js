@@ -49,3 +49,20 @@ const refresh = useCallback(async () => {
     window.location.hash = next;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const mutate = async (method, url, body) => {
+    if (mutationLock.current) return false;
+    mutationLock.current = true; setSaving(true); setNotice(null);
+    try {
+      const result = await api.request({ method, url, data: body });
+      const updated = await refresh();
+      setNotice({ type: updated ? 'success' : 'warning', text: updated ? result.data.mensaje : `${result.data.mensaje} No se pudo actualizar la vista. Pulsa Actualizar; no repitas el registro.` });
+      return true;
+    } catch (error) {
+      setNotice({ type: 'error', text: errorMessage(error) }); return false;
+    } finally { setSaving(false); mutationLock.current = false; }
+  };
+  const askDelete = (url, description, title) => setPending({ url, description, title });
+  const confirmDelete = async () => { await mutate('delete', pending.url); setPending(null); };
+  const shared = { data, mutate, askDelete, busy: saving || loading || !!loadError, navigate };
+  const section = sections[page];

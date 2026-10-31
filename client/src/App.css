@@ -1699,3 +1699,319 @@ th:last-child,td:last-child{
   }
   
 }
+
+@media(max-width:750px){
+  .app-shell{
+    display:block
+  }
+  .sidebar{
+    position:static;
+    width:100%;
+    padding:17px 18px 12px;
+    border-right:0;
+    border-bottom:1px solid var(--line)
+  }
+  .brand{
+    margin:0 0 20px
+  }
+  .brand>span:last-child{
+    font-size:26px
+  }
+  .brand small{
+    font-size:6px;
+    margin-top:6px
+  }
+  .brand-symbol{
+    width:34px;
+    height:34px;
+    border-radius:10px
+  }
+  .sidebar nav{
+    flex-direction:row;
+    gap:4px;
+    overflow-x:auto
+  }
+  .nav-link{
+    white-space:nowrap;
+    padding:11px 12px;
+    gap:7px;
+    font-size:10px;
+    flex-shrink:0;
+    border-radius:8px
+  }
+  .nav-link svg{
+    width:16px;
+    height:16px
+  }
+  .nav-caption,.sidebar-bottom,.nav-dot{
+    display:none
+  }
+  .main-shell{
+    width:100%;
+    margin:0
+  }
+  .topbar{
+    height:56px;
+    padding:0 20px
+  }
+  .topbar-right{
+    gap:12px
+  }
+  .breadcrumbs{
+    font-size:10px;
+    gap:8px
+  }
+  .connection{
+    font-size:9px
+  }
+  .profile-chip{
+    width:28px;
+    height:28px;
+    font-size:8px
+  }
+  main{
+    padding:26px 20px 0
+  }
+  h1{
+    font-size:25px
+  }
+  .page-heading{
+    gap:10px;
+    margin-bottom:25px
+  }
+  .page-heading p{
+    font-size:11px;
+    max-width:290px
+  }
+  .refresh-button{
+    font-size:0;
+    padding:10px
+  }
+  .refresh-button svg{
+    width:17px
+  }
+  .welcome{
+    padding:26px;
+    min-height:260px
+  }
+  .welcome h2{
+    font-size:29px
+  }
+  .welcome-art{
+    min-width:200px;
+    width:230px
+  }
+  .welcome .eyebrow{
+    font-size:7px;
+    letter-spacing:1px
+  }
+  .section-title>.muted{
+    display:none
+  }
+  .salary-overview{
+    grid-template-columns:repeat(2,minmax(0,1fr))
+  }
+  .salary-total{
+    grid-column:1/-1
+  }
+  .salary-total>strong{
+    font-size:33px
+  }
+  .salary-stat>strong{
+    margin:12px 0 6px;
+    font-size:28px
+  }
+  .panel-header{
+    padding:20px;
+    flex-wrap:wrap
+  }
+  .panel-header .search{
+    max-width:none;
+    width:100%
+  }
+  .composer-heading h2{
+    font-size:18px
+  }
+  .assignment-composer{
+    padding:23px
+  }
+  .team-members{
+    grid-template-columns:1fr
+  }
+  .page-footer{
+    font-size:8px
+  }
+  .section-title h2{
+    font-size:18px
+  }
+  .assignment-groups{
+    padding:0 20px 5px
+  }
+  
+}
+
+@media(max-width:520px){
+  main{
+    padding:23px 15px 0
+  }
+  .sidebar{
+    padding-left:15px;
+    padding-right:15px
+  }
+  .topbar{
+    padding:0 16px
+  }
+  .page-heading h1{
+    font-size:23px
+  }
+  .welcome-art{
+    display:none
+  }
+  .welcome{
+    padding:28px
+  }
+  .welcome h2{
+    font-size:31px
+  }
+  .welcome p{
+    font-size:11px
+  }
+  .module-grid{
+    gap:10px
+  }
+  .module-card{
+    padding:16px 14px 0
+  }
+  .module-card h3{
+    font-size:14px
+  }
+  .module-card p{
+    font-size:10px;
+    min-height:50px
+  }
+  .module-card .icon-tile{
+    width:36px;
+    height:36px;
+    border-radius:10px
+  }
+  .module-card .icon-tile svg{
+    width:21px
+  }
+  .module-link{
+    font-size:9px
+  }
+  .module-value{
+    font-size:21px
+  }
+  .module-value>span{
+    font-size:8px
+  }
+  .module-number{
+    font-size:9px
+  }
+  .home-bottom{
+    gap:17px
+  }
+  .employee-layout .form-panel form fieldset,.salary-layout .form-panel fieldset{
+    display:block
+  }
+  .project-grid{
+    grid-template-columns:1fr
+  }
+  .assignment-fields{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    gap:18px
+  }
+  .assignment-fields>svg{
+    display:none
+  }
+  .assignment-fields .form-buttons{
+    margin-top:2px;
+    flex-direction:column
+  }
+  .composer-heading>.icon-tile{
+    display:none
+  }
+  .composer-heading h2{
+    line-height:1.4
+  }
+  .assignment-step .field{
+    margin:0
+  }
+  .team-member{
+    padding:11px;
+    gap:8px
+  }
+  .team-member .avatar{
+    width:30px;
+    height:30px
+  }
+  .team-member .row-actions{
+    gap:0
+  }
+  .team-member .icon-button{
+    width:27px
+  }
+  .member-info strong{
+    font-size:10px
+  }
+  .member-info span{
+    font-size:9px
+  }
+  .group-heading h3{
+    font-size:12px
+  }
+  .salary-toolbar{
+    padding-left:20px;
+    padding-right:20px
+  }
+  .salary-toolbar .search{
+    max-width:none;
+    width:100%
+  }
+  .page-footer>span:last-child{
+    display:none
+  }
+  .notice{
+    font-size:11px;
+    align-items:flex-start;
+    flex-wrap:wrap
+  }
+  .notice>span{
+    min-width:180px
+  }
+  .notice .icon-button{
+    width:23px;
+    height:23px
+  }
+  .getting-started{
+    padding:24px
+  }
+  .board-toolbar .search{
+    width:100%;
+    max-width:none
+  }
+  .home-bottom .panel-header .text-button{
+    margin-top:2px
+  }
+  .panel-header h2{
+    font-size:15px
+  }
+  .person{
+    min-width:170px
+  }
+  .dialog-actions{
+    flex-wrap:wrap
+  }
+  
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{
+    scroll-behavior:auto!important;
+    transition:none!important
+  }
+  
+}

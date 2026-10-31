@@ -21,3 +21,17 @@ function App() {
   const [data, setData] = useState(null), [loading, setLoading] = useState(true), [loadError, setLoadError] = useState('');
   const [saving, setSaving] = useState(false), [notice, setNotice] = useState(null), [pending, setPending] = useState(null);
   const request = useRef(0), mutationLock = useRef(false);
+
+const refresh = useCallback(async () => {
+    const current = ++request.current;
+    setLoading(true);
+    try {
+      const responses = await Promise.all(['empleados', 'proyectos', 'asignaciones', 'salarios'].map(path => api.get(`/${path}`)));
+      if (current !== request.current) return false;
+      setData(Object.fromEntries(['empleados', 'proyectos', 'asignaciones', 'salarios'].map((key, i) => [key, responses[i].data])));
+      setLoadError(''); return true;
+    } catch (error) {
+      if (current === request.current) setLoadError(errorMessage(error));
+      return false;
+    } finally { if (current === request.current) setLoading(false); }
+  }, []);

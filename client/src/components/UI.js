@@ -42,3 +42,13 @@ export function Actions({ onEdit, onDelete, label, disabled }) {
 export function FormButtons({ editing, busy, onCancel, createLabel = 'Guardar registro' }) {
   return <div className="form-buttons"><button className="button primary" disabled={busy}><Icon name={editing ? 'check' : 'plus'} size={18}/>{busy ? 'Guardando…' : editing ? 'Guardar cambios' : createLabel}</button>{editing && <button type="button" className="button secondary" onClick={onCancel} disabled={busy}>Cancelar edición</button>}</div>;
 }
+
+export function Confirm({ pending, busy, onClose, onConfirm }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const dialog = ref.current, previous = document.activeElement;
+    dialog.showModal();
+    return () => { dialog.close(); previous?.focus?.(); };
+  }, []);
+  return <dialog ref={ref} className="confirm-dialog" onCancel={e => { e.preventDefault(); if (!busy) onClose(); }} aria-labelledby="confirm-title"><div className="dialog-icon"><Icon name="trash" size={25}/></div><h2 id="confirm-title">{pending.title || '¿Eliminar este registro?'}</h2><p>{pending.description}</p><div className="dialog-actions"><button className="button secondary" onClick={onClose} disabled={busy} autoFocus>Cancelar</button><button className="button destructive" onClick={onConfirm} disabled={busy}>{busy ? 'Eliminando…' : 'Sí, eliminar'}</button></div></dialog>;
+}

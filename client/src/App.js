@@ -66,3 +66,224 @@ const refresh = useCallback(async () => {
   const confirmDelete = async () => { await mutate('delete', pending.url); setPending(null); };
   const shared = { data, mutate, askDelete, busy: saving || loading || !!loadError, navigate };
   const section = sections[page];
+
+  
+return (
+  <div className={`app-shell theme-${page}`}>
+
+    <aside className="sidebar">
+
+      <button
+        className="brand"
+        onClick={() => navigate('inicio')}
+        aria-label="Nexo, ir al inicio"
+      >
+        <span className="brand-symbol">
+          <Icon name="asignaciones" size={24} />
+        </span>
+        <span>
+          nexo
+          <small>PERSONAS & PROYECTOS</small>
+        </span>
+      </button>
+
+      <span className="nav-caption">ESPACIO DE TRABAJO</span>
+
+      <nav aria-label="Navegación principal">
+        {Object.entries(sections).map(([key, value]) => (
+          <button
+            disabled={saving}
+            key={key}
+            className={`nav-link ${page === key ? 'selected' : ''}`}
+            aria-current={page === key ? 'page' : undefined}
+            onClick={() => navigate(key)}
+          >
+            <Icon name={value.icon} />
+            <span>{value.name}</span>
+            {page === key && <span className="nav-dot" />}
+          </button>
+        ))}
+      </nav>
+
+      <div className="sidebar-bottom">
+        <div className="workspace-card">
+          <span className="workspace-avatar">AG</span>
+          <div>
+            <strong>Actividad grupal</strong>
+            <small>Gestión de empleados</small>
+          </div>
+        </div>
+
+        <div className="sidebar-footnote">
+          Un equipo. Un espacio.
+        </div>
+      </div>
+    </aside>
+
+    <div className="main-shell">
+
+      <header className="topbar">
+
+        <div className="breadcrumbs">
+          <span>Mi espacio</span>
+          <span>/</span>
+          <strong>{section.name}</strong>
+        </div>
+
+        <div className="topbar-right">
+          <span className={`connection ${loadError ? 'offline' : loading ? 'checking' : ''}`}>
+            <i />
+            {loadError
+              ? 'Sin conexión'
+              : loading
+              ? 'Conectando…'
+              : 'Sistema conectado'}
+          </span>
+
+          <span className="profile-chip">AG</span>
+        </div>
+
+      </header>
+
+      <main>
+
+        <div className="page-heading">
+
+          <div>
+            <span className="eyebrow">
+              {page === 'inicio'
+                ? 'PANEL GENERAL'
+                : `GESTIÓN DE ${section.name.toUpperCase()}`}
+            </span>
+
+            <h1>{section.title}</h1>
+            <p>{section.subtitle}</p>
+          </div>
+
+          <button
+            className="button secondary refresh-button"
+            disabled={loading || saving}
+            onClick={refresh}
+          >
+            <Icon name="refresh" size={17} />
+            {loading ? 'Cargando…' : 'Actualizar'}
+          </button>
+
+        </div>
+
+        {notice && (
+          <div
+            className={`notice ${notice.type}`}
+            role={notice.type === 'error' ? 'alert' : 'status'}
+          >
+            <Icon
+              name={notice.type === 'success' ? 'check' : 'info'}
+              size={20}
+            />
+
+            <span>{notice.text}</span>
+
+            <button
+              className="icon-button"
+              onClick={() => setNotice(null)}
+              aria-label="Cerrar mensaje"
+            >
+              <Icon name="close" size={17} />
+            </button>
+          </div>
+        )}
+
+        {loadError && (
+          <div className="notice error" role="alert">
+            <Icon name="info" />
+
+            <span>
+              {loadError}
+              {data && ' Se muestran los últimos datos cargados; actualiza para continuar.'}
+            </span>
+
+            <button
+              className="text-button"
+              disabled={loading || saving}
+              onClick={refresh}
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {!data ? (
+          <section className="panel initial-state">
+
+            <span className="icon-tile">
+              <Icon name={loadError ? 'info' : 'refresh'} size={30} />
+            </span>
+
+            <h2>
+              {loadError
+                ? 'Conectemos tu espacio'
+                : 'Cargando tu espacio…'}
+            </h2>
+
+            <p>
+              {loadError
+                ? 'Inicia MySQL en XAMPP, importa base_de_datos.sql y ejecuta npm start dentro de server.'
+                : 'Estamos consultando empleados, proyectos, asignaciones y salarios.'}
+            </p>
+
+            {loadError && (
+              <button
+                className="button primary"
+                disabled={loading}
+                onClick={refresh}
+              >
+                Volver a intentar
+              </button>
+            )}
+
+          </section>
+        ) : (
+          <div className="page-content" aria-busy={loading}>
+
+            {page === 'inicio' && <Inicio {...shared} />}
+
+            {page === 'empleados' && <Empleados {...shared} />}
+
+            {page === 'proyectos' && <Proyectos {...shared} />}
+
+            {page === 'asignaciones' && (
+              <Asignaciones
+                {...shared}
+                selectedProject={selectedProject}
+              />
+            )}
+
+            {page === 'salarios' && <Salarios {...shared} />}
+
+          </div>
+        )}
+
+        <footer className="page-footer">
+          <span>
+            nexo <i /> Personas & proyectos
+          </span>
+
+          <span>Organiza. Conecta. Avanza.</span>
+        </footer>
+
+      </main>
+    </div>
+
+    {pending && (
+      <Confirm
+        pending={pending}
+        busy={saving}
+        onClose={() => setPending(null)}
+        onConfirm={confirmDelete}
+      />
+    )}
+
+  </div>
+);
+
+export default App;

@@ -35,3 +35,17 @@ const refresh = useCallback(async () => {
       return false;
     } finally { if (current === request.current) setLoading(false); }
   }, []);
+
+  useEffect(() => { refresh(); return () => { request.current += 1; }; }, [refresh]);
+  useEffect(() => {
+    const handler = () => { setPage(readPage()); setNotice(null); };
+    window.addEventListener('hashchange', handler);
+    return () => window.removeEventListener('hashchange', handler);
+  }, []);
+  useEffect(() => { document.title = `${sections[page].name} · Nexo`; }, [page]);
+  const navigate = (next, projectId = null) => {
+    if (saving) return;
+    setSelectedProject(projectId); setPage(next); setNotice(null);
+    window.location.hash = next;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };

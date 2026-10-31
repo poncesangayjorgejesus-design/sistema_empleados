@@ -26,3 +26,19 @@ export const today = () => { const d = new Date(); return `${d.getFullYear()}-${
 export const initials = (name = '') => name.trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
 export const matches = (term, ...values) => values.join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().includes(term.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim());
 export function Avatar({ name, small = false }) { return <span className={`avatar ${small ? 'small' : ''}`}>{initials(name)}</span>; }
+
+export function Search({ value, onChange, placeholder = 'Buscar…' }) {
+  return <label className="search"><Icon name="search"/><input aria-label={placeholder} placeholder={placeholder} value={value} onChange={e => onChange(e.target.value)}/></label>;
+}
+export function Empty({ title, children, icon = 'proyectos' }) {
+  return <div className="empty"><span className="empty-icon"><Icon name={icon} size={28}/></span><h3>{title}</h3><p>{children}</p></div>;
+}
+export function Field({ label, children, ...props }) {
+  return <label className="field"><span>{label}</span>{children || <input {...props}/>}</label>;
+}
+export function Actions({ onEdit, onDelete, label, disabled }) {
+  return <div className="row-actions"><button type="button" className="icon-button" title={`Editar ${label}`} aria-label={`Editar ${label}`} onClick={onEdit} disabled={disabled}><Icon name="edit" size={17}/></button><button type="button" className="icon-button danger" title={`Eliminar ${label}`} aria-label={`Eliminar ${label}`} onClick={onDelete} disabled={disabled}><Icon name="trash" size={17}/></button></div>;
+}
+export function FormButtons({ editing, busy, onCancel, createLabel = 'Guardar registro' }) {
+  return <div className="form-buttons"><button className="button primary" disabled={busy}><Icon name={editing ? 'check' : 'plus'} size={18}/>{busy ? 'Guardando…' : editing ? 'Guardar cambios' : createLabel}</button>{editing && <button type="button" className="button secondary" onClick={onCancel} disabled={busy}>Cancelar edición</button>}</div>;
+}

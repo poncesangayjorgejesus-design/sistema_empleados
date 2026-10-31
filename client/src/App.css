@@ -1492,3 +1492,76 @@ th:last-child,td:last-child{
   justify-content:flex-end;
   margin-top:25px
 }
+
+@media(min-width:1600px){
+  .module-card p{
+    font-size:12px
+  }
+  .module-link{
+    font-size:12px
+  }
+  .employee-layout{
+    grid-template-columns:340px minmax(0,1fr)
+  }
+  .project-layout,.salary-layout{
+    grid-template-columns:minmax(0,1fr) 340px
+  }
+  
+}
+
+@media(max-width:1250px){
+  .sidebar{
+    width:205px;
+    padding:30px 16px 20px
+  }
+  .main-shell{
+    margin-left:205px;
+    width:calc(100% - 205px)
+  }
+  main{
+    padding:30px 28px 0
+  }
+  .topbar{
+    padding:0 28px
+  }
+  .module-grid{
+    gap:12px
+  }
+  .module-card{
+    padding:17px 15px 0
+  }
+  .module-value{
+    font-size:20px
+  }
+  .employee-layout{
+    grid-template-columns:270px minmax(0,1fr);
+    gap:17px
+  }
+  .form-panel{
+    padding:21px
+  }
+  .project-layout,.salary-layout{
+    grid-template-columns:minmax(0,1fr) 270px;
+    gap:18px
+  }
+  .project-grid{
+    grid-template-columns:1fr
+  }
+  .assignment-fields{
+    gap:13px
+  }
+  .team-members{
+    grid-template-columns:1fr
+  }
+  .welcome-art{
+    width:300px
+  }
+  .person{
+    min-width:150px
+  }
+  .directory th,.directory td{
+    padding-left:13px;
+    padding-right:13px
+  }
+  
+}

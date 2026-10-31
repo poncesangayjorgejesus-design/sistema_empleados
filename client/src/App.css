@@ -1027,3 +1027,113 @@ th:last-child,td:last-child{
   line-height:1.8;
   margin-bottom:0
 }
+
+.project-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 300px;
+  gap:24px;
+  align-items:start
+}
+.board-toolbar{
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:22px
+}
+.board-toolbar h2{
+  font-size:15px
+}
+.board-toolbar p{
+  font-size:10px;
+  color:var(--muted);
+  margin:7px 0 0
+}
+.board-toolbar .search{
+  max-width:210px;
+  background:#fff
+}
+.project-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px
+}
+.project-card{
+  border:1px solid #e5e0f1;
+  border-radius:12px;
+  background:#fff;
+  padding:22px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden
+}
+.project-card-top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:21px;
+  flex-wrap:wrap
+}
+.project-card-top .eyebrow{
+  font-size:7px;
+  letter-spacing:1.1px;
+  color:#9b8cb5
+}
+.project-card-top .row-actions{
+  margin-left:auto
+}
+.project-card h3{
+  font-size:17px;
+  line-height:1.4;
+  margin-bottom:11px
+}
+.project-description{
+  font-size:11px;
+  color:#9098aa;
+  line-height:1.8;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  flex:1
+}
+.project-team{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:29px;
+  margin:16px 0
+}
+.project-team>span{
+  font-size:9px;
+  color:#9a90ab
+}
+.avatar-stack{
+  display:flex;
+  padding-left:5px
+}
+.avatar-stack:empty{
+  display:none
+}
+.avatar-stack .avatar{
+  border:2px solid #fff;
+  margin-left:-5px
+}
+.project-card>.text-button{
+  border-top:1px solid #eeeaf5;
+  padding-top:15px;
+  justify-content:space-between
+}
+.project-form{
+  border-top:3px solid var(--accent)
+}
+.project-form>.eyebrow{
+  font-size:8px
+}
+.project-form>h2{
+  font-size:24px;
+  margin:13px 0 8px
+}
+.project-form>.muted{
+  font-size:11px;
+  margin:0
+}

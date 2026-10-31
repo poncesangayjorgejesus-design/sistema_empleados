@@ -1565,3 +1565,137 @@ th:last-child,td:last-child{
   }
   
 }
+
+@media(max-width:1020px){
+  .sidebar{
+    width:185px;
+    padding:28px 13px 16px
+  }
+  .main-shell{
+    margin-left:185px;
+    width:calc(100% - 185px)
+  }
+  .brand small{
+    font-size:7px;
+    letter-spacing:.8px
+  }
+  .brand>span:last-child{
+    font-size:29px
+  }
+  .brand{
+    gap:8px
+  }
+  .brand-symbol{
+    width:37px;
+    height:37px
+  }
+  .nav-caption{
+    font-size:8px
+  }
+  .nav-link{
+    font-size:12px;
+    padding:13px 11px
+  }
+  .module-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))
+  }
+  .module-card p{
+    min-height:0
+  }
+  .home-bottom{
+    grid-template-columns:1fr
+  }
+  .welcome-art{
+    width:240px;
+    min-width:200px
+  }
+  .art-label{
+    font-size:9px;
+    padding:12px;
+    gap:7px
+  }
+  .art-label i{
+    margin-left:3px
+  }
+  .people-label{
+    left:0
+  }
+  .project-label{
+    right:-20px
+  }
+  .salary-label{
+    left:0
+  }
+  .welcome{
+    padding:29px
+  }
+  .welcome h2{
+    font-size:28px
+  }
+  .welcome p{
+    font-size:10px
+  }
+  .employee-layout,.salary-layout{
+    grid-template-columns:1fr
+  }
+  .employee-layout .form-panel{
+    max-width:100%
+  }
+  .employee-layout .form-panel form fieldset{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0 20px
+  }
+  .employee-layout .form-panel .form-buttons{
+    justify-content:flex-end;
+    margin-bottom:19px
+  }
+  .project-layout{
+    grid-template-columns:1fr
+  }
+  .project-form{
+    grid-row:1
+  }
+  .project-form textarea{
+    min-height:90px
+  }
+  .project-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))
+  }
+  .assignment-fields{
+    grid-template-columns:1fr 20px 1fr
+  }
+  .assignment-fields .form-buttons{
+    grid-column:1/-1;
+    margin-top:5px;
+    flex-direction:row
+  }
+  .salary-overview{
+    gap:12px
+  }
+  .salary-total{
+    padding:24px 18px
+  }
+  .salary-total>strong{
+    font-size:26px
+  }
+  .salary-stat{
+    padding:23px 16px
+  }
+  .salary-stat>span{
+    font-size:10px
+  }
+  .salary-layout .form-panel{
+    grid-row:1
+  }
+  .salary-layout .form-panel fieldset{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0 20px
+  }
+  .salary-layout .form-buttons{
+    justify-content:flex-end;
+    margin-bottom:19px
+  }
+  
+}

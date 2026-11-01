@@ -1,245 +1,289 @@
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { api, errorMessage } from './api';
+import { Confirm, Icon } from './components/UI';
+import Inicio from './pages/Inicio';
+import Empleados from './pages/Empleados';
+import Proyectos from './pages/Proyectos';
+import Asignaciones from './pages/Asignaciones';
+import Salarios from './pages/Salarios';
 import './App.css';
-import { useState, useEffect } from 'react';
-import Axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
 
-const MySwal = withReactContent(Swal);
-
+const sections = {
+  inicio: { name: 'Inicio', icon: 'home', title: 'Tu espacio de trabajo', subtitle: 'Una vista general para mantener todo conectado.' },
+  empleados: { name: 'Empleados', icon: 'empleados', title: 'Las personas, primero.', subtitle: 'Registra, consulta y actualiza la información de tu equipo.' },
+  proyectos: { name: 'Proyectos', icon: 'proyectos', title: 'Ideas que toman forma.', subtitle: 'Organiza tus proyectos y descubre quiénes participan en ellos.' },
+  asignaciones: { name: 'Asignaciones', icon: 'asignaciones', title: 'El trabajo se hace en equipo.', subtitle: 'Relaciona empleados y proyectos desde un solo lugar.' },
+  salarios: { name: 'Salarios', icon: 'salarios', title: 'Cada actualización cuenta.', subtitle: 'Administra los salarios de tu equipo y consulta su historial.' }
+};
+function readPage() { const page = window.location.hash.slice(1).split('?')[0]; return sections[page] ? page : 'inicio'; }
 function App() {
-  const [nombre, setNombre] = useState('');
-  const [edad, setEdad] = useState('0');
-  const [pais, setPais] = useState('');
-  const [cargo, setCargo] = useState('');
-  const [correo, setCorreo] = useState('');
-  const [id, setId] = useState();
-  
-  const [editar, setEditar] = useState(false);
-  const [empleadosList, setEmpleadosList] = useState([]);
+  const [page, setPage] = useState(readPage), [selectedProject, setSelectedProject] = useState(null);
+  const [data, setData] = useState(null), [loading, setLoading] = useState(true), [loadError, setLoadError] = useState('');
+  const [saving, setSaving] = useState(false), [notice, setNotice] = useState(null), [pending, setPending] = useState(null);
+  const request = useRef(0), mutationLock = useRef(false);
 
-  const add = () => {
-    Axios.post('http://localhost:3001/create', {
-      nombre: nombre,
-      edad: edad,
-      pais: pais, 
-      cargo: cargo,
-      correo: correo
-    }).then(() => {
-      getEmpleados();
-      limpiarCampos();
-      cancelar();
-      MySwal.fire({
-        title: 'Registro Exitoso',
-        text: 'El empleado ha sido registrado correctamente.',
-        icon: 'success',
-      });
-    });
-  };
-
-  const update = () => {
-    Axios.put('http://localhost:3001/update', {
-      id: id,
-      nombre: nombre,
-      edad: edad,
-      pais: pais, 
-      cargo: cargo,
-      correo: correo
-    }).then(() => {
-      getEmpleados();
-      limpiarCampos();
-      cancelar();
-      MySwal.fire({
-        title: 'Actualización Exitosa',
-        text: 'El empleado ha sido actualizado correctamente.',
-        icon: 'success',
-      });
-    });
-  };
-
-  // 📌 AQUÍ COLOCAS LA FUNCIÓN DELETE QUE COMPARTISTE
-  const deleteEmple = (id, nombre) => {
-    MySwal.fire({
-      title: "¿Eliminar?",
-      text: `¿Desea eliminar a ${nombre}?`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Axios.delete(`http://localhost:3001/delete/${id}`).then(() => {
-          getEmpleados();
-          limpiarCampos();
-          MySwal.fire({
-            title: "Eliminado",
-            text: `${nombre} ha sido eliminado.`,
-            icon: "success"
-          });
-        });
-      }
-    });
-  };
-
-  const cancelar = () => {
-    setEditar(false);
-    setNombre('');
-    setEdad('0');
-    setPais('');
-    setCargo('');
-    setCorreo('');
-    setId('');
-  };
-
-  const editarEmpleado = (val) => {
-    setEditar(true);
-    setNombre(val.nombre);
-    setEdad(val.edad);
-    setPais(val.pais);
-    setCargo(val.cargo);
-    setCorreo(val.correo);
-    setId(val.id);
-  };
-
-  const limpiarCampos = () => {
-    setNombre('');
-    setEdad('');
-    setPais('');
-    setCargo('');
-    setCorreo('');
-  };
-
-  const getEmpleados = () => {
-    Axios.get('http://localhost:3001/empleados').then((response) => {
-      setEmpleadosList(response.data);
-    });
-  };
-
-  useEffect(() => {
-    getEmpleados();
+const refresh = useCallback(async () => {
+    const current = ++request.current;
+    setLoading(true);
+    try {
+      const responses = await Promise.all(['empleados', 'proyectos', 'asignaciones', 'salarios'].map(path => api.get(`/${path}`)));
+      if (current !== request.current) return false;
+      setData(Object.fromEntries(['empleados', 'proyectos', 'asignaciones', 'salarios'].map((key, i) => [key, responses[i].data])));
+      setLoadError(''); return true;
+    } catch (error) {
+      if (current === request.current) setLoadError(errorMessage(error));
+      return false;
+    } finally { if (current === request.current) setLoading(false); }
   }, []);
 
-  return (
-    <div className="container">
-      <div className="card text-center mt-5">
-        <div className="card-header">
-          Gestión de Empleados
+  useEffect(() => { refresh(); return () => { request.current += 1; }; }, [refresh]);
+  useEffect(() => {
+    const handler = () => { setPage(readPage()); setNotice(null); };
+    window.addEventListener('hashchange', handler);
+    return () => window.removeEventListener('hashchange', handler);
+  }, []);
+  useEffect(() => { document.title = `${sections[page].name} · Nexo`; }, [page]);
+  const navigate = (next, projectId = null) => {
+    if (saving) return;
+    setSelectedProject(projectId); setPage(next); setNotice(null);
+    window.location.hash = next;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const mutate = async (method, url, body) => {
+    if (mutationLock.current) return false;
+    mutationLock.current = true; setSaving(true); setNotice(null);
+    try {
+      const result = await api.request({ method, url, data: body });
+      const updated = await refresh();
+      setNotice({ type: updated ? 'success' : 'warning', text: updated ? result.data.mensaje : `${result.data.mensaje} No se pudo actualizar la vista. Pulsa Actualizar; no repitas el registro.` });
+      return true;
+    } catch (error) {
+      setNotice({ type: 'error', text: errorMessage(error) }); return false;
+    } finally { setSaving(false); mutationLock.current = false; }
+  };
+  const askDelete = (url, description, title) => setPending({ url, description, title });
+  const confirmDelete = async () => { await mutate('delete', pending.url); setPending(null); };
+  const shared = { data, mutate, askDelete, busy: saving || loading || !!loadError, navigate };
+  const section = sections[page];
+
+  
+return (
+  <div className={`app-shell theme-${page}`}>
+
+    <aside className="sidebar">
+
+      <button
+        className="brand"
+        onClick={() => navigate('inicio')}
+        aria-label="Nexo, ir al inicio"
+      >
+        <span className="brand-symbol">
+          <Icon name="asignaciones" size={24} />
+        </span>
+        <span>
+          nexo
+          <small>PERSONAS & PROYECTOS</small>
+        </span>
+      </button>
+
+      <span className="nav-caption">ESPACIO DE TRABAJO</span>
+
+      <nav aria-label="Navegación principal">
+        {Object.entries(sections).map(([key, value]) => (
+          <button
+            disabled={saving}
+            key={key}
+            className={`nav-link ${page === key ? 'selected' : ''}`}
+            aria-current={page === key ? 'page' : undefined}
+            onClick={() => navigate(key)}
+          >
+            <Icon name={value.icon} />
+            <span>{value.name}</span>
+            {page === key && <span className="nav-dot" />}
+          </button>
+        ))}
+      </nav>
+
+      <div className="sidebar-bottom">
+        <div className="workspace-card">
+          <span className="workspace-avatar">AG</span>
+          <div>
+            <strong>Actividad grupal</strong>
+            <small>Gestión de empleados</small>
+          </div>
         </div>
-        <div className="card-body">
 
-          <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon1">Nombre_:</span>
-            <input type="text"
-              value={nombre}
-              onChange={(event) => {
-                setNombre(event.target.value)
-              }}
-              className="form-control" placeholder="Ingresar Nombre" aria-label="Username" aria-describedby="basic-addon1" />
-          </div>
-
-          <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon1">Edad____:</span>
-            <input type="number"
-              value={edad}
-              onChange={(event) => {
-                setEdad(event.target.value)
-              }}
-              className="form-control" placeholder="Ingresar Edad" aria-label="Username" aria-describedby="basic-addon1" />
-          </div>
-
-          <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon1">Pais_____:</span>
-            <input type="text"
-              value={pais}
-              onChange={(event) => {
-                setPais(event.target.value)
-              }}
-              className="form-control" placeholder="Ingresar Pais" aria-label="Username" aria-describedby="basic-addon1" />
-          </div>
-
-          <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon1">Cargo___:</span>
-            <input type="text"
-              value={cargo}
-              onChange={(event) => {
-                setCargo(event.target.value)
-              }}
-              className="form-control" placeholder="Ingresar Cargo" aria-label="Username" aria-describedby="basic-addon1" />
-          </div>
-
-          <div className="input-group mb-3">
-            <span className="input-group-text" id="basic-addon1">Correo___:</span>
-            <input type="text"
-              value={correo}
-              onChange={(event) => {
-                setCorreo(event.target.value)
-              }}
-              className="form-control" placeholder="Ingresar Correo" aria-label="Username" aria-describedby="basic-addon1" />
-          </div>
-        </div>
-            
-        <div className="card-footer text-muted">
-          {
-            editar ?
-            <div>
-              <button className="btn btn-success m-2" onClick={update}>Actualizar</button>
-              <button className="btn btn-danger m-2" onClick={cancelar}>Cancelar</button>
-            </div>
-            :
-            <button className="btn btn-success" onClick={add}>Registrar</button>
-          }
+        <div className="sidebar-footnote">
+          Un equipo. Un espacio.
         </div>
       </div>
+    </aside>
 
-      <table className="table table-striped mt-4">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Nombre</th>
-            <th scope="col">Edad</th>
-            <th scope="col">Pais</th>
-            <th scope="col">Cargo</th>
-            <th scope="col">Correo</th>
-            <th scope="col">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            empleadosList.map((val, key) => {
-              return (
-                <tr key={key}>
-                  <td>{val.id}</td>
-                  <td>{val.nombre}</td>
-                  <td>{val.edad}</td>
-                  <td>{val.pais}</td>
-                  <td>{val.cargo}</td>
-                  <td>{val.correo}</td>
-                  <td>
-                    <div className="btn-group" role="group">
-                      <button type="button"
-                        onClick={() => {
-                          editarEmpleado(val);
-                        }}
-                        className="btn btn-warning">Editar</button>
-                      
-                      {}
-                      <button type="button"
-                        onClick={() => {
-                          deleteEmple(val.id, val.nombre);
-                        }}
-                        className="btn btn-danger">Eliminar</button>
-                    </div>
-                  </td>
-                </tr>
-              )
-            })
-          }
-        </tbody>
-      </table>
+    <div className="main-shell">
+
+      <header className="topbar">
+
+        <div className="breadcrumbs">
+          <span>Mi espacio</span>
+          <span>/</span>
+          <strong>{section.name}</strong>
+        </div>
+
+        <div className="topbar-right">
+          <span className={`connection ${loadError ? 'offline' : loading ? 'checking' : ''}`}>
+            <i />
+            {loadError
+              ? 'Sin conexión'
+              : loading
+              ? 'Conectando…'
+              : 'Sistema conectado'}
+          </span>
+
+          <span className="profile-chip">AG</span>
+        </div>
+
+      </header>
+
+      <main>
+
+        <div className="page-heading">
+
+          <div>
+            <span className="eyebrow">
+              {page === 'inicio'
+                ? 'PANEL GENERAL'
+                : `GESTIÓN DE ${section.name.toUpperCase()}`}
+            </span>
+
+            <h1>{section.title}</h1>
+            <p>{section.subtitle}</p>
+          </div>
+
+          <button
+            className="button secondary refresh-button"
+            disabled={loading || saving}
+            onClick={refresh}
+          >
+            <Icon name="refresh" size={17} />
+            {loading ? 'Cargando…' : 'Actualizar'}
+          </button>
+
+        </div>
+
+        {notice && (
+          <div
+            className={`notice ${notice.type}`}
+            role={notice.type === 'error' ? 'alert' : 'status'}
+          >
+            <Icon
+              name={notice.type === 'success' ? 'check' : 'info'}
+              size={20}
+            />
+
+            <span>{notice.text}</span>
+
+            <button
+              className="icon-button"
+              onClick={() => setNotice(null)}
+              aria-label="Cerrar mensaje"
+            >
+              <Icon name="close" size={17} />
+            </button>
+          </div>
+        )}
+
+        {loadError && (
+          <div className="notice error" role="alert">
+            <Icon name="info" />
+
+            <span>
+              {loadError}
+              {data && ' Se muestran los últimos datos cargados; actualiza para continuar.'}
+            </span>
+
+            <button
+              className="text-button"
+              disabled={loading || saving}
+              onClick={refresh}
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
+
+        {!data ? (
+          <section className="panel initial-state">
+
+            <span className="icon-tile">
+              <Icon name={loadError ? 'info' : 'refresh'} size={30} />
+            </span>
+
+            <h2>
+              {loadError
+                ? 'Conectemos tu espacio'
+                : 'Cargando tu espacio…'}
+            </h2>
+
+            <p>
+              {loadError
+                ? 'Inicia MySQL en XAMPP, importa base_de_datos.sql y ejecuta npm start dentro de server.'
+                : 'Estamos consultando empleados, proyectos, asignaciones y salarios.'}
+            </p>
+
+            {loadError && (
+              <button
+                className="button primary"
+                disabled={loading}
+                onClick={refresh}
+              >
+                Volver a intentar
+              </button>
+            )}
+
+          </section>
+        ) : (
+          <div className="page-content" aria-busy={loading}>
+
+            {page === 'inicio' && <Inicio {...shared} />}
+
+            {page === 'empleados' && <Empleados {...shared} />}
+
+            {page === 'proyectos' && <Proyectos {...shared} />}
+
+            {page === 'asignaciones' && (
+              <Asignaciones
+                {...shared}
+                selectedProject={selectedProject}
+              />
+            )}
+
+            {page === 'salarios' && <Salarios {...shared} />}
+
+          </div>
+        )}
+
+        <footer className="page-footer">
+          <span>
+            nexo <i /> Personas & proyectos
+          </span>
+
+          <span>Organiza. Conecta. Avanza.</span>
+        </footer>
+
+      </main>
     </div>
-  );
-}
+
+    {pending && (
+      <Confirm
+        pending={pending}
+        busy={saving}
+        onClose={() => setPending(null)}
+        onConfirm={confirmDelete}
+      />
+    )}
+
+  </div>
+);
 
 export default App;
